@@ -15,7 +15,7 @@ public class CharacterMove : TacticsMove
     {
         Debug.DrawRay(transform.position, transform.forward);
         
-        if (!turn)
+        if (!selected)
         {
             return;
         }
@@ -23,7 +23,6 @@ public class CharacterMove : TacticsMove
         if (!moving)
         {
             FindSelectableTiles();
-            CheckMouse();
         }
         else
         {
@@ -31,25 +30,26 @@ public class CharacterMove : TacticsMove
         }
     }
 
-    private void CheckMouse()
-    {
-        if (Input.GetMouseButtonUp(0))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+    //private void CheckMouse()
+    //{
+    //    if (Input.GetMouseButtonUp(0))
+    //    {
+    //        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
-            {
-                if (hit.collider.tag == "Tile")
-                {
-                    Tile t = hit.collider.GetComponent<Tile>();
+    //        RaycastHit hit;
+    //        if (Physics.Raycast(ray, out hit))
+    //        {
+    //            if (hit.collider.tag == "Tile")
+    //            {
+    //                Tile t = hit.collider.GetComponent<Tile>();
 
-                    if (t.selectable)
-                    {
-                        MoveToTile(t);
-                    }
-                }
-            }
-        }
-    }
+    //                if (t.selectable)
+    //                {
+    //                    MoveToTile(t);
+    //                    playerParent.OnBeganMove?.Invoke(this);
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
 }

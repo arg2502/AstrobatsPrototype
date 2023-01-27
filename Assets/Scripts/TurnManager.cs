@@ -4,76 +4,56 @@ using UnityEngine;
 
 public class TurnManager : MonoBehaviour
 {
-    private static Dictionary<string, List<TacticsMove>> units = new Dictionary<string, List<TacticsMove>>();
-    private static Queue<string> turnKey = new Queue<string>();
-    private static Queue<TacticsMove> turnTeam = new Queue<TacticsMove>();
+    private static List<Player> players = new List<Player>();
+    private static Queue<Player> turnOrder = new Queue<Player>();
 
-    private void Update() 
+    private void Update()
     {
-        if (turnTeam.Count == 0)
+        if (turnOrder.Count == 0)
         {
-            InitTeamTurnQueue();
+            Init();
         }
     }
 
-    private static void InitTeamTurnQueue()
+    public static void Init()
     {
-        List<TacticsMove> teamList = units[turnKey.Peek()];
-
-        foreach(var unit in teamList)
+        foreach(var player in players)
         {
-            turnTeam.Enqueue(unit);
+            turnOrder.Enqueue(player);
         }
 
         StartTurn();
     }
 
+    public static void AddUnit(Player player, bool first) // TODO: make first something more robust in terms of priority
+    {
+        if (first)
+        {
+            players.Insert(0, player);
+        }
+        else
+        { 
+            players.Add(player);
+        }
+        
+    }
+
     private static void StartTurn()
     {
-        Debug.Log($"START TURN: turn team count: {turnTeam.Count}");
-        if (turnTeam.Count > 0)
+        Debug.Log($"START TURN: turn team count: {turnOrder.Count}");
+        if (turnOrder.Count > 0)
         {
-            turnTeam.Peek().BeginTurn();
+            turnOrder.Peek().BeginTurn();
         }
     }
 
     public static void EndTurn()
     {
-        var unit = turnTeam.Dequeue();
-        unit.EndTurn();
-
-        if (turnTeam.Count > 0)
-        {
-            StartTurn();
-        }
-        else
-        {
-            string team = turnKey.Dequeue();
-            turnKey.Enqueue(team);
-            InitTeamTurnQueue();
-        }
+        Debug.Log($"Turn Manager END TURN: turn team count: {turnOrder.Count}");
+        var unit = turnOrder.Dequeue();
+        //unit.EndTurn();
+        turnOrder.Enqueue(unit);
+        StartTurn();
     }
 
-    public static void AddUnit(TacticsMove unit)
-    {
-        List<TacticsMove> list;
-
-        if (!units.ContainsKey(unit.tag))
-        {
-            list = new List<TacticsMove>();
-            units.Add(unit.tag, list);
-            // units[unit.tag] = list;
-
-            if (!turnKey.Contains(unit.tag))
-            {
-                turnKey.Enqueue(unit.tag);
-            }
-        }
-        else
-        {
-            list = units[unit.tag];
-        }
-
-        list.Add(unit);
-    }
 }

@@ -15,7 +15,7 @@ public class NPCMove : TacticsMove
     {
         Debug.DrawRay(transform.position, transform.forward);
         
-        if (!turn)
+        if (!selected)
         {
             return;
         }

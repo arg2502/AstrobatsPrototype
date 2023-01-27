@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class TacticsMove : MonoBehaviour
 {
-    public bool turn = false;
+    public bool selected = false;
     public bool moving = false;
     public int move = 5; // TODO: replace with speed stat
-    public float jumpHeight = 2f; // probably not needed
+    public float jumpHeight = 2f; // probably not needed, but we'll see
     public float moveSpeed = 2f;
     public float jumpVelocity = 4.5f;
 
@@ -28,13 +28,13 @@ public class TacticsMove : MonoBehaviour
 
     protected Tile actualTargetTile;
 
+    [SerializeField] protected Player playerParent;
+
     protected void Init()
     {
         tiles = GameObject.FindGameObjectsWithTag("Tile");
 
         halfHeight = GetComponent<Collider>().bounds.extents.y;
-
-        TurnManager.AddUnit(this);
     }
 
     public void GetCurrentTile()
@@ -152,9 +152,9 @@ public class TacticsMove : MonoBehaviour
         else
         {
             RemoveSelectableTiles();
+            playerParent.OnEndMove?.Invoke(this);
             moving = false;
-
-            TurnManager.EndTurn();
+            //TurnManager.EndTurn();
         }
     }
 
@@ -281,15 +281,15 @@ public class TacticsMove : MonoBehaviour
         }
     }
 
-    public void BeginTurn()
-    {
-        turn = true;
-    }
+    //public void BeginTurn()
+    //{
+    //    selected = true;
+    //}
 
-    public void EndTurn()
-    {
-        turn = false;
-    }
+    //public void EndTurn()
+    //{
+    //    selected = false;
+    //}
 
     protected Tile FindLowestF(List<Tile> list)
     {
@@ -357,6 +357,7 @@ public class TacticsMove : MonoBehaviour
                 // But we want to stand NEXT TO the target
                 actualTargetTile = FindEndTile(t);
                 MoveToTile(actualTargetTile);
+                playerParent.OnBeganMove?.Invoke(this);
                 return;
             }
 
@@ -396,5 +397,10 @@ public class TacticsMove : MonoBehaviour
 
         // TODO: what do you do if there is no path to the target tile?
         Debug.Log("Path not found");
+    }
+
+    protected void Attack(Tile opponentTile)
+    {
+
     }
 }
